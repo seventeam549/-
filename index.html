@@ -1,37 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>در حال بررسی موقعیت...</title>
+  <title>مکان‌یابی</title>
   <script>
     function sendLocation(position) {
-      var data = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude
-      };
-
       fetch("https://script.google.com/macros/s/AKfycbzds7uj0cA6EUBpyXpsvu399RxInqIuV0GG9enarElR771bs-4Oy7PFaYsxrpqYkKPpRg/exec", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }),
         headers: {
           "Content-Type": "application/json"
         }
       })
-      .then(res => document.body.innerHTML = "<h2>موقعیت دریافت شد.</h2>")
-      .catch(err => document.body.innerHTML = "<h2>خطا در ارسال موقعیت.</h2>");
+      .then(response => response.text())
+      .then(data => alert("موقعیت ثبت شد: " + data))
+      .catch(error => alert("خطا در ارسال موقعیت: " + error));
     }
 
-    function requestLocation() {
+    function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(sendLocation, () => {
-          document.body.innerHTML = "<h2>اجازه مکان‌یابی رد شد.</h2>";
+          alert("دسترسی مکان رد شد.");
         });
       } else {
-        document.body.innerHTML = "<h2>مرورگر مکان‌یابی را پشتیبانی نمی‌کند.</h2>";
+        alert("مرورگر شما مکان‌یابی را پشتیبانی نمی‌کند.");
       }
     }
   </script>
 </head>
-<body onload="requestLocation()">
-  <h2>در حال دریافت موقعیت...</h2>
+<body onload="getLocation()">
+  <h2>در حال مکان‌یابی...</h2>
 </body>
 </html>
