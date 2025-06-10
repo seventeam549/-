@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>موقعیت</title>
+  <title>ذخیره موقعیت کاربر</title>
 </head>
 <body>
   <p id="status">در حال دریافت موقعیت...</p>
@@ -11,32 +11,50 @@
     window.onload = function () {
       const status = document.getElementById('status');
 
+      // چک کردن پشتیبانی مرورگر از Geolocation
       if (!navigator.geolocation) {
         status.innerText = "❌ مرورگر شما موقعیت جغرافیایی را پشتیبانی نمی‌کند.";
         return;
       }
 
+      // درخواست موقعیت کاربر
       navigator.geolocation.getCurrentPosition(
         position => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          fetch('https://script.google.com/macros/s/AKfycby9zfns7RfsxYE5y-fTO7t2lkQU1T2jJ24cGWd1Lb61yIbndlNGTlXETJM6n33NvC8w/exec', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ lat, lon })
-          }).then(response => response.json())
-            .then(data => {
-              if (data.status === 'success') {
-                status.innerText = "✅ موقعیت با موفقیت ذخیره شد.";
-              } else {
-                status.innerText = "❌ خطا در ذخیره‌سازی موقعیت.";
-              }
-            }).catch(() => {
-              status.innerText = "❌ ارسال اطلاعات به سرور با خطا مواجه شد.";
-            });
+          // آماده‌سازی داده‌ها برای ذخیره در فایل JSON
+          const locationData = {
+            lat,
+            lon,
+            timestamp: new Date().toISOString()
+          };
+
+          // تبدیل داده‌ها به رشته JSON زیبا
+          const jsonStr = JSON.stringify(locationData, null, 2);
+
+          // ایجاد Blob برای ساخت فایل
+          const blob = new Blob([jsonStr], { type: "application/json" });
+
+          // ساخت URL موقت برای فایل
+          const url = URL.createObjectURL(blob);
+
+          // ساخت یک لینک دانلود موقت
+          const a = document.createElement("a");
+          a.href = url;
+
+          // نام فایل با زمان فعلی (برای جلوگیری از بازنویسی)
+          a.download = `location_${Date.now()}.json`;
+
+          // اضافه کردن لینک به بدنه صفحه و شبیه‌سازی کلیک برای دانلود
+          document.body.appendChild(a);
+          a.click();
+
+          // حذف لینک و آزادسازی URL
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
+          status.innerText = "✅ موقعیت دریافت و فایل ذخیره شد.";
         },
         () => {
           status.innerText = "❌ کاربر اجازه موقعیت را نداد.";
