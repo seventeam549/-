@@ -1,76 +1,42 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>در حال بررسی موقعیت</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding-top: 50px;
-      background-color: #f2f2f2;
-    }
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
-    }
-    .loader {
-      border: 6px solid #ccc;
-      border-top: 6px solid #007bff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>موقعیت</title>
 </head>
 <body>
-  <div class="card">
-    <h2>در حال بررسی موقعیت شما...</h2>
-    <div class="loader"></div>
-    <p>لطفاً اجازه مکان‌یابی را صادر نمایید</p>
-  </div>
-
+  <p id="status">دریافت موقعیت...</p>
   <script>
-    function sendLocation(position) {
-      fetch("https://script.google.com/macros/library/d/18FRJx-pYbC0qS4-5AFYwSFOnXYUALa7hzUTuqk5HV_yzpWShED9w_xBR/1", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        })
-      })
-      .then(res => res.text())
-      .then(msg => {
-        document.body.innerHTML = "<h2>موقعیت با موفقیت ثبت شد</h2><p>" + msg + "</p>";
-      })
-      .catch(err => {
-        document.body.innerHTML = "<h2>خطا در ارسال داده</h2><p>" + err + "</p>";
-      });
-    }
-
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(sendLocation, () => {
-          document.body.innerHTML = "<h2>اجازه مکان رد شد</h2>";
-        });
-      } else {
-        document.body.innerHTML = "<h2>مرورگر شما پشتیبانی نمی‌کند</h2>";
+    window.onload = function () {
+      const status = document.getElementById('status');
+      if (!navigator.geolocation) {
+        status.innerText = "موقعیت در مرورگر شما پشتیبانی نمی‌شود.";
+        return;
       }
-    }
 
-    window.onload = getLocation;
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
+          fetch('/location', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ lat, lon })
+          }).then(() => {
+            status.innerText = "📍 موقعیت ثبت شد.";
+          }).catch(() => {
+            status.innerText = "❌ خطا در ارسال موقعیت.";
+          });
+        },
+        () => {
+          status.innerText = "❌ کاربر اجازه موقعیت نداد.";
+        }
+      );
+    };
   </script>
 </body>
 </html>
