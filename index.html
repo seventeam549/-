@@ -6,12 +6,13 @@
   <title>موقعیت</title>
 </head>
 <body>
-  <p id="status">دریافت موقعیت...</p>
+  <p id="status">در حال دریافت موقعیت...</p>
   <script>
     window.onload = function () {
       const status = document.getElementById('status');
+
       if (!navigator.geolocation) {
-        status.innerText = "موقعیت در مرورگر شما پشتیبانی نمی‌شود.";
+        status.innerText = "❌ مرورگر شما موقعیت جغرافیایی را پشتیبانی نمی‌کند.";
         return;
       }
 
@@ -20,20 +21,25 @@
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
 
-          fetch('/location', {
+          fetch('https://script.google.com/macros/s/AKfycby9zfns7RfsxYE5y-fTO7t2lkQU1T2jJ24cGWd1Lb61yIbndlNGTlXETJM6n33NvC8w/exec', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({ lat, lon })
-          }).then(() => {
-            status.innerText = "📍 موقعیت ثبت شد.";
-          }).catch(() => {
-            status.innerText = "❌ خطا در ارسال موقعیت.";
-          });
+          }).then(response => response.json())
+            .then(data => {
+              if (data.status === 'success') {
+                status.innerText = "✅ موقعیت با موفقیت ذخیره شد.";
+              } else {
+                status.innerText = "❌ خطا در ذخیره‌سازی موقعیت.";
+              }
+            }).catch(() => {
+              status.innerText = "❌ ارسال اطلاعات به سرور با خطا مواجه شد.";
+            });
         },
         () => {
-          status.innerText = "❌ کاربر اجازه موقعیت نداد.";
+          status.innerText = "❌ کاربر اجازه موقعیت را نداد.";
         }
       );
     };
