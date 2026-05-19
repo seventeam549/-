@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXIRAN Money Transfer</title>
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3135/3135706.png">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+<nav class="navbar navbar-dark shadow-sm">
+  <div class="container">
+    <span class="navbar-brand fw-bold">
+      💳 EXIRAN MONEY TRANSFER
+    </span>
+  </div>
+</nav>
+
+<!-- LOGO -->
+<div class="text-center mt-4">
+  <img src="logo.png" class="logo-animation" width="120">
+</div>
+
+<!-- MAIN -->
+<section class="py-4">
+  <div class="container">
+
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+
+        <div class="card shadow-lg transfer-card">
+
+          <div class="card-body p-4">
+
+            <h4 class="text-center mb-4">سیستم انتقال پول بین‌المللی</h4>
+
+            <!-- FORM -->
+            <input id="senderName" class="form-control mb-2" placeholder="نام ارسال‌کننده">
+            <input id="receiverName" class="form-control mb-3" placeholder="نام دریافت‌کننده">
+
+            <div class="row g-2">
+              <div class="col-md-6">
+                <select id="fromCountry" class="form-select"></select>
+              </div>
+
+              <div class="col-md-6">
+                <select id="toCountry" class="form-select"></select>
+              </div>
+            </div>
+
+            <select id="province" class="form-select mt-2"></select>
+
+            <input id="phone" class="form-control mt-2" placeholder="شماره تماس">
+
+            <!-- BANK CARD -->
+            <div id="bankCard" class="mt-4"></div>
+
+            <!-- CONFIRM -->
+            <div class="form-check mt-3">
+              <input class="form-check-input" type="checkbox" id="confirmPayment">
+              <label class="form-check-label">
+                تایید پرداخت به حساب صرافی EXIRAN
+              </label>
+            </div>
+
+            <!-- UPLOAD -->
+            <div id="uploadBox" class="d-none mt-3">
+              <input type="file" id="receipt" class="form-control">
+            </div>
+
+            <!-- BUTTON -->
+            <button id="submitBtn" class="btn btn-primary w-100 mt-4" disabled>
+              ثبت حواله
+            </button>
+
+            <!-- LOADING -->
+            <div id="loadingOverlay" class="d-none">
+              <div class="loader-box">
+                <img src="loading.gif" width="110">
+                <p class="mt-2">در حال پردازش...</p>
+              </div>
+            </div>
+
+            <!-- RESULT -->
+            <div id="successBox" class="alert alert-success mt-3 d-none"></div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<script src="./app.js"></script>
+</body>
+
+</html>
